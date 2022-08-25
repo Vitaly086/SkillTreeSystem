@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4386a2564cc4447a45ff9a26e437783, type: 3}
+  m_Name: SkillTreeModel_1
+  m_EditorClassIdentifier: 
+  _skillModels:
+  - _position: {x: -633, y: 24}
+    _isBaseSkill: 1
+    _cost: 0
+    _neighbourIndex: 010000000200000006000000
+  - _position: {x: -599, y: 268}
+    _isBaseSkill: 0
+    _cost: 10
+    _neighbourIndex: 0000000003000000
+  - _position: {x: -457, y: 120}
+    _isBaseSkill: 0
+    _cost: 10
+    _neighbourIndex: 0000000003000000
+  - _position: {x: -315, y: 190}
+    _isBaseSkill: 0
+    _cost: 30
+    _neighbourIndex: 0100000002000000
+  - _position: {x: -274, y: -12}
+    _isBaseSkill: 0
+    _cost: 20
+    _neighbourIndex: 0900000005000000
+  - _position: {x: -213, y: -155}
+    _isBaseSkill: 0
+    _cost: 20
+    _neighbourIndex: 0400000008000000
+  - _position: {x: -800, y: 183}
+    _isBaseSkill: 0
+    _cost: 30
+    _neighbourIndex: 0000000007000000
+  - _position: {x: -830, y: -87}
+    _isBaseSkill: 0
+    _cost: 50
+    _neighbourIndex: 06000000
+  - _position: {x: -388, y: -190}
+    _isBaseSkill: 0
+    _cost: 30
+    _neighbourIndex: 0500000009000000
+  - _position: {x: -453, y: -38}
+    _isBaseSkill: 0
+    _cost: 10
+    _neighbourIndex: 0800000000000000
+  - _position: {x: -625, y: -196}
+    _isBaseSkill: 0
+    _cost: 10
+    _neighbourIndex: 00000000
