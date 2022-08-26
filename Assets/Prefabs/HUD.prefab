@@ -383,7 +383,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Learned skiil have color - red
+  m_text: 'Learned skill have color - red
 
     Available skill have color - blue'
   m_isRightToLeft: 0

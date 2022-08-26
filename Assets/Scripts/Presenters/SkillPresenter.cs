@@ -94,19 +94,22 @@ namespace Presenters
                     if (IsCanSell())
                     {
                         MessageBroker.Default
-                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, false, true));
+                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
+                                isCanSell: true));
                         return;
                     }
 
                     if (IsCanBuy())
                     {
                         MessageBroker.Default
-                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, true, false));
+                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: true,
+                                isCanSell: false));
                         return;
                     }
 
                     MessageBroker.Default
-                        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, false, false));
+                        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
+                            isCanSell: false));
                 })
                 .AddTo(this);
         }
