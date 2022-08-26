@@ -69,28 +69,80 @@ https://user-images.githubusercontent.com/93872632/186951903-b7c72be2-eaef-4d3a-
 и на реактивное свойство [Skill State](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Models/SkillState.cs).
 При изменении состояний денег или стейта у каждого скилла происходит обновление стейта, так работает логика включения и отключения интерактивности у скиллов.
 
-![изображение](https://user-images.githubusercontent.com/93872632/186955092-700e562f-ee7a-4ac9-92e3-10bd680180bc.png)
+```C#
+private void UpdateState()
+        {
+            if (WasBought())
+            {
+                return;
+            }
 
+            if (!WasBought() && EnoughMoney() &&
+                IsAnyNeighbourBought(this))
+            {
+                _state.Value = SkillState.Available;
+                return;
+            }
+
+            _state.Value = SkillState.Unavailable;
+        } 
+```
 При клике на скилл отправляется сообщение о выбранном текущем Скилле, на которое подписаные различные презентеры, 
 например [Skill Price Presenter](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Presenters/SkillPricePresenter.cs)
 
 Проверка возможности продажи происходит в [Pathfinding Service](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Services/PathfindingService.cs),
 в данном классе реализован алгоритм поиска пути в глубину (DFS).
 
-Для обновления количества денег в UI использовался паттерн Service Locator, [User Money Presenter](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Presenters/UserMoneyPresenter.cs)
-так же подписывается на реактивное свойство денег. 
+```C#
+private bool DFS(SkillPresenter currentPresenter, List<SkillPresenter> destinations)
+        {
+            if (!destinations.Contains(currentPresenter))
+            {
+                _usedNodes.Add(currentPresenter);
+            }
+
+            if (destinations.Contains(currentPresenter))
+            {
+                return true;
+            }
+
+            foreach (var neighbour in currentPresenter.GetNeighbours())
+            {
+                if (_usedNodes.Contains(neighbour) || neighbour.State.Value != SkillState.Bought)
+                {
+                    continue;
+                }
+
+                if (DFS(neighbour, destinations))
+                {
+                    _usedNodes.Clear();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+```
+
+Для отображения денег в UI [User Money Presenter](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Presenters/UserMoneyPresenter.cs) через [Service Locator](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Services/ServiceLocator.cs) получает ссылку на [IMoney Service](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Services/IMoneyService.cs) и подписывается на реактивное свойство Money. Класс [Service Locator](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Services/ServiceLocator.cs) использует паттерн [Singletone](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Services/Singleton.cs).
 
 
 # Итог
-Я реализовал все задачи ТЗ и расширил свою реализацию исходя из своего опыта в играх, где у персонажа может быть несколько специализаций веток скиллов, которые можно покупать параллельно.
+Я реализовал все задачи ТЗ и расширил свою реализацию исходя из своего опыта в играх, где у персонажа может быть несколько веток скиллов для разных специализаций, которые можно покупать параллельно.
 Например World of warcraft 
 
 ![изображение](https://user-images.githubusercontent.com/93872632/186959814-2f3eaf2d-2bd0-4238-9432-0881aa328c1a.png)
 
 
-Моя реализация позволяет делать множество веток скиллов на одной сцене переиспользуя готовые классы. В дальнейшем можно добавить функционал:
+Моя реализация позволяет делать множество веток скиллов на одной сцене переиспользуя готовые классы.
+Также в одной ветке можно сделать несколько базовых классов, что добавляет нам еще больший функционал в возможности постороения дерева скиллов.
+
+
+В дальнейшем можно добавить функционал:
 1) уровень каждого изучченого скилла;
 2) получения Skill Model с сервера в форма JSON;
+
+
 В моих знаниях, возможно, сейчас есть пробелы, но я готов много учитьтся и работать, чтобы исправить это.
 Буду благодарен за обратную связь по выполнения ТЗ.
 
