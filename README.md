@@ -1,6 +1,4 @@
-# Skill_Tree_Testgame
-
-# Skill  Tree 
+## Skill  Tree 
 В данном проекте разработана система Skill Tree с использованием ассета UniRx.
 Архитектура проекта простороена на паттерне MV(R)P. Также используется паттерн ServiceLocator, Singletone, алгоритм поиска пути в глубину (DFS).
 
