@@ -138,7 +138,7 @@ namespace Presenters
             }
 
             if (!WasBought() && EnoughMoney() &&
-                IsAnyNeighbourBought(this))
+                IsAnyNeighbourBought())
             {
                 _state.Value = SkillState.Available;
                 return;
@@ -178,9 +178,9 @@ namespace Presenters
             return _state.Value == SkillState.Bought;
         }
 
-        private bool IsAnyNeighbourBought(SkillPresenter currentPresenter)
+        private bool IsAnyNeighbourBought()
         {
-            return currentPresenter._neighbours.Any(presenter => presenter.State.Value == SkillState.Bought);
+            return _neighbours.Any(presenter => presenter.State.Value == SkillState.Bought);
         }
 
         private void RefreshSelectedSkill()

@@ -21,7 +21,7 @@ namespace Services
                 if (currentPresenter.State.Value == SkillState.Bought)
                 {
                     _usedNodes.Add(soldSkill);
-                    if (DFS(currentPresenter, destinations))
+                    if (HasPathToNodes(currentPresenter, destinations))
                     {
                         allNeighboursHasPath = true;
                     }
@@ -36,7 +36,7 @@ namespace Services
             return allNeighboursHasPath;
         }
 
-        private bool DFS(SkillPresenter currentPresenter, List<SkillPresenter> destinations)
+        private bool HasPathToNodes(SkillPresenter currentPresenter, List<SkillPresenter> destinations)
         {
             if (!destinations.Contains(currentPresenter))
             {
@@ -55,7 +55,7 @@ namespace Services
                     continue;
                 }
 
-                if (DFS(neighbour, destinations))
+                if (HasPathToNodes(neighbour, destinations))
                 {
                     _usedNodes.Clear();
                     return true;
