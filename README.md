@@ -4,9 +4,9 @@
 Архитектура проекта построена на паттерне MV(R)P.
 
 В основе лежит использование:
-1) ServiceLocator (можно заменить на Zenject)
+1) RX
 2) MessageBroker
-3) RX
+3) ServiceLocator (можно заменить на Zenject)
 
 Тестовое задание:
 [Кефир СПб — Тестовое задание.pdf](https://github.com/Vitaly086/Skill_Tree_Test/files/9423957/default.pdf)
