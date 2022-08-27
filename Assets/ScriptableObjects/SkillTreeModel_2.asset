@@ -32,7 +32,7 @@ MonoBehaviour:
   - _position: {x: 105, y: -155}
     _isBaseSkill: 0
     _cost: 40
-    _neighbourIndex: 05000000
+    _neighbourIndex: 0500000003000000
   - _position: {x: -25, y: -41}
     _isBaseSkill: 0
     _cost: 60

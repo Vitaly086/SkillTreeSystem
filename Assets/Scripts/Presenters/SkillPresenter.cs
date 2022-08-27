@@ -44,9 +44,9 @@ namespace Presenters
 
         private void Start()
         {
-            SubscribeStateUpdate();
-            SubscribeMoneyUpdate();
-            SubscribeSelectedSkill();
+            SubscribeOnStateUpdate();
+            SubscribeOnMoneyUpdate();
+            SubscribeOnClick();
         }
 
         public void AddNeighbours(SkillPresenter neighbour)
@@ -86,40 +86,42 @@ namespace Presenters
             RefreshSelectedSkill();
         }
 
-        private void SubscribeSelectedSkill()
+        private void SubscribeOnClick()
         {
             _view.Button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    if (IsCanSell())
-                    {
-                        MessageBroker.Default
-                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-                                isCanSell: true));
-                        return;
-                    }
-
-                    if (IsCanBuy())
-                    {
-                        MessageBroker.Default
-                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: true,
-                                isCanSell: false));
-                        return;
-                    }
-
-                    MessageBroker.Default
-                        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-                            isCanSell: false));
-                })
+                .Subscribe(_ => CurrentSkillSelected())
                 .AddTo(this);
         }
 
-        private void SubscribeMoneyUpdate()
+        private void CurrentSkillSelected()
+        {
+            if (CanSell())
+            {
+                MessageBroker.Default
+                    .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
+                        isCanSell: true));
+                return;
+            }
+
+            if (CanBuy())
+            {
+                MessageBroker.Default
+                    .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: true,
+                        isCanSell: false));
+                return;
+            }
+
+            MessageBroker.Default
+                .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
+                    isCanSell: false));
+        }
+
+        private void SubscribeOnMoneyUpdate()
         {
             _moneyService.Money.Subscribe(_ => UpdateState()).AddTo(this);
         }
 
-        private void SubscribeStateUpdate()
+        private void SubscribeOnStateUpdate()
         {
             _state.Subscribe(state =>
             {
@@ -145,12 +147,12 @@ namespace Presenters
             _state.Value = SkillState.Unavailable;
         }
 
-        private bool IsCanBuy()
+        private bool CanBuy()
         {
             return !_model.IsBaseSkill && IsAvailable();
         }
 
-        private bool IsCanSell()
+        private bool CanSell()
         {
             return !_model.IsBaseSkill && WasBought() && IsAllNeighboursConnectBaseSkills();
         }

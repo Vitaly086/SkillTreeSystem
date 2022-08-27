@@ -52,7 +52,7 @@ MonoBehaviour:
   - _position: {x: -453, y: -38}
     _isBaseSkill: 0
     _cost: 10
-    _neighbourIndex: 0800000000000000
+    _neighbourIndex: 080000000000000004000000
   - _position: {x: -625, y: -196}
     _isBaseSkill: 0
     _cost: 10
