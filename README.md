@@ -90,6 +90,37 @@ private void UpdateState()
 При клике на скилл отправляется сообщение о выбранном текущем Скилле, на которое подписаные различные презентеры, 
 например [Skill Price Presenter](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Presenters/SkillPricePresenter.cs)
 
+```C#
+
+ private void SubscribeSelectedSkill()
+        {
+            _view.Button.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (IsCanSell())
+                    {
+                        MessageBroker.Default
+                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
+                                isCanSell: true));
+                        return;
+                    }
+
+                    if (IsCanBuy())
+                    {
+                        MessageBroker.Default
+                            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: true,
+                                isCanSell: false));
+                        return;
+                    }
+
+                    MessageBroker.Default
+                        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
+                            isCanSell: false));
+                })
+                .AddTo(this);
+        }
+```
+
 Проверка возможности продажи происходит в [Pathfinding Service](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Services/PathfindingService.cs),
 в данном классе реализован алгоритм поиска пути в глубину (DFS).
 
