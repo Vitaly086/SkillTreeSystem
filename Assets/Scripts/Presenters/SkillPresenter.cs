@@ -137,8 +137,7 @@ namespace Presenters
                 return;
             }
 
-            if (!WasBought() && EnoughMoney() &&
-                IsAnyNeighbourBought())
+            if (EnoughMoney() && IsAnyNeighbourBought())
             {
                 _state.Value = SkillState.Available;
                 return;
