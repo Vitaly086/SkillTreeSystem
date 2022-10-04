@@ -94,25 +94,8 @@ private void UpdateState()
 ```C#
 private void CurrentSkillSelected()
 {
-    if (CanSell())
-    {
-        MessageBroker.Default
-            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: false,
-                CanSell: true));
-        return;
-    }
-
-    if (CanBuy())
-    {
-        MessageBroker.Default
-            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: true,
-                CanSell: false));
-        return;
-    }
-
     MessageBroker.Default
-        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: false,
-            CanSell: false));
+                .Publish(new CurrentSkillSelectedEvent(this, CanBuy(), CanSell()));
 }
 ```
 
