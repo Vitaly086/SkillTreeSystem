@@ -16,12 +16,12 @@ namespace Services
             _neighbours = soldSkill.GetNeighbours();
             var allNeighboursHasPath = false;
 
-            foreach (var currentPresenter in _neighbours)
+            foreach (var currentSkill in _neighbours)
             {
-                if (currentPresenter.State.Value == SkillState.Bought)
+                if (currentSkill.State.Value == SkillState.Bought)
                 {
                     _usedNodes.Add(soldSkill);
-                    if (HasPathToNodes(currentPresenter, destinations))
+                    if (HasPathToNodes(currentSkill, destinations))
                     {
                         allNeighboursHasPath = true;
                     }
@@ -36,19 +36,19 @@ namespace Services
             return allNeighboursHasPath;
         }
 
-        private bool HasPathToNodes(SkillPresenter currentPresenter, List<SkillPresenter> destinations)
+        private bool HasPathToNodes(SkillPresenter currentSkill, List<SkillPresenter> destinations)
         {
-            if (!destinations.Contains(currentPresenter))
+            if (!destinations.Contains(currentSkill))
             {
-                _usedNodes.Add(currentPresenter);
+                _usedNodes.Add(currentSkill);
             }
 
-            if (destinations.Contains(currentPresenter))
+            if (destinations.Contains(currentSkill))
             {
                 return true;
             }
 
-            foreach (var neighbour in currentPresenter.GetNeighbours())
+            foreach (var neighbour in currentSkill.GetNeighbours())
             {
                 if (_usedNodes.Contains(neighbour) || neighbour.State.Value != SkillState.Bought)
                 {

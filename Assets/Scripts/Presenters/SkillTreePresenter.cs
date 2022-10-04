@@ -74,12 +74,12 @@ namespace Presenters
             }
         }
 
-        private void CreateEdges(SkillPresenter currentPresenter, SkillPresenter neighbourPresenter)
+        private void CreateEdges(SkillPresenter currentSkill, SkillPresenter neighbourSkill)
         {
             var edge = Instantiate(_egdePrefab, transform);
             edge.positionCount = 2;
-            edge.SetPosition(0, currentPresenter.transform.position);
-            edge.SetPosition(1, neighbourPresenter.transform.position);
+            edge.SetPosition(0, currentSkill.transform.position);
+            edge.SetPosition(1, neighbourSkill.transform.position);
         }
     }
 }

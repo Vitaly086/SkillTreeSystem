@@ -100,8 +100,7 @@ namespace Presenters
         private void CurrentSkillSelected()
         {
             MessageBroker.Default
-                .Publish(new CurrentSkillSelectedEvent(this, CanBuy(),
-                    CanSell()));
+                .Publish(new CurrentSkillSelectedEvent(this, CanBuy(), CanSell()));
         }
 
         private void SubscribeOnMoneyUpdate()
