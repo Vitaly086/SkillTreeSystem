@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4386a2564cc4447a45ff9a26e437783, type: 3}
   m_Name: SkillTreeModel_2
   m_EditorClassIdentifier: 
+  <SkillOffsetZ>k__BackingField: 1
   _skillModels:
   - _position: {x: -25, y: 135}
     _isBaseSkill: 1

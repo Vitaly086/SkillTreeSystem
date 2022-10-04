@@ -59,7 +59,7 @@ namespace Presenters
             {
                 var skillModel = _skillTreeModel.SkillModels[i];
 
-                var position = new Vector3(skillModel.Position.x, skillModel.Position.y, 1f);
+                var position = new Vector3(skillModel.Position.x, skillModel.Position.y, _skillTreeModel.SkillOffsetZ);
                 var currentPresenter = Instantiate(_skillPrefab, position, Quaternion.identity,
                     transform);
                 currentPresenter.name = "Skill " + i;

@@ -288,10 +288,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: HUD
       objectReference: {fileID: 0}
-    - target: {fileID: 8689677099691481709, guid: 2e3416dd44c1f6344a9ba1385b19441a, type: 3}
-      propertyPath: m_Color.a
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e3416dd44c1f6344a9ba1385b19441a, type: 3}
 --- !u!1 &1430551647

@@ -7,7 +7,8 @@ namespace Models
     public class SkillTreeModel : ScriptableObject
     {
         public IReadOnlyList<SkillModel> SkillModels => _skillModels;
-        
-        [SerializeField] private List<SkillModel> _skillModels; 
+        [field: SerializeField] public float SkillOffsetZ { get; private set; }
+
+        [SerializeField] private List<SkillModel> _skillModels;
     }
 }
