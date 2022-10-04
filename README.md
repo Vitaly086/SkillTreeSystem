@@ -8,10 +8,8 @@
 2) MessageBroker
 3) ServiceLocator (можно заменить на Zenject)
 
-Тестовое задание:
-[Кефир СПб — Тестовое задание.pdf](https://github.com/Vitaly086/Skill_Tree_Test/files/9423957/default.pdf)
 
-## Задачи:
+## Сделано:
 
 1) Индикатор количества денег. :heavy_check_mark:
 
@@ -29,17 +27,15 @@
 
 8) Кнопка Забыть все. Активна всегда, продает все умения. :heavy_check_mark:
 
+9) Добавление множества деревьев скиллов. :heavy_check_mark:
 
-## Дополнительно сделано:
-1) Добавление множества деревьев скиллов. :heavy_check_mark:
+10) Создание цикличных связей скиллов. :heavy_check_mark: 
 
-2) Создание цикличных связей скиллов. :heavy_check_mark: 
+11) Возможность выбора нескольких базовых скиллов. :heavy_check_mark: 
 
-3) Возможность выбора нескольких базовых скиллов. :heavy_check_mark: 
+12) Умения отображают свою цену. :heavy_check_mark: 
 
-4) Умения отображают свою цену. :heavy_check_mark: 
-
-5) Новые умения открываются при условии покупки предыдущего и достаточного количества денег. :heavy_check_mark: 
+13) Новые умения открываются при условии покупки предыдущего и достаточного количества денег. :heavy_check_mark: 
 
 # Игра
 
@@ -78,17 +74,15 @@ private void UpdateState()
 {
     if (WasBought())
     {
-      return;
+         return;
     }
 
-    if (!WasBought() && EnoughMoney() &&
-    IsAnyNeighbourBought(this))
+    if (EnoughMoney() && IsAnyNeighbourBought())
     {
-     _state.Value = SkillState.Available;
-     return;
+        _state.Value = SkillState.Available;
+        return;
     }
-
-    _state.Value = SkillState.Unavailable;
+        _state.Value = SkillState.Unavailable;
 } 
 ```
 
@@ -103,22 +97,22 @@ private void CurrentSkillSelected()
     if (CanSell())
     {
         MessageBroker.Default
-            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-                isCanSell: true));
+            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: false,
+                CanSell: true));
         return;
     }
 
     if (CanBuy())
     {
         MessageBroker.Default
-            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: true,
-                isCanSell: false));
+            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: true,
+                CanSell: false));
         return;
     }
 
     MessageBroker.Default
-        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-            isCanSell: false));
+        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: false,
+            CanSell: false));
 }
 ```
 
@@ -158,14 +152,8 @@ private bool HasPathToNodes(SkillPresenter currentPresenter, List<SkillPresenter
 
 
 # Итог
-Я реализовал все задачи ТЗ и расширил свою реализацию исходя из своего опыта в играх, где у персонажа может быть несколько веток скиллов для разных специализаций, которые можно покупать параллельно.
 
-Например World of warcraft 
-
-![изображение](https://user-images.githubusercontent.com/93872632/186959814-2f3eaf2d-2bd0-4238-9432-0881aa328c1a.png)
-
-
-Моя реализация позволяет делать множество веток скиллов на одной сцене переиспользуя готовые классы.
+Моя реализация системы скиллов позволяет делать множество веток скиллов на одной сцене переиспользуя готовые классы.
 Также в одной ветке можно сделать несколько базовых классов, что добавляет нам еще больший функционал в возможности построения дерева скиллов.
 
 
@@ -175,8 +163,6 @@ private bool HasPathToNodes(SkillPresenter currentPresenter, List<SkillPresenter
 3) Встроить Zenject
 
 
-В моих знаниях, возможно, сейчас есть пробелы, но я готов много учиться и работать, чтобы исправить это.
-Буду благодарен за обратную связь по выполнению ТЗ.
 
 
 
