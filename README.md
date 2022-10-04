@@ -74,17 +74,15 @@ private void UpdateState()
 {
     if (WasBought())
     {
-      return;
+         return;
     }
 
-    if (!WasBought() && EnoughMoney() &&
-    IsAnyNeighbourBought(this))
+    if (EnoughMoney() && IsAnyNeighbourBought())
     {
-     _state.Value = SkillState.Available;
-     return;
+        _state.Value = SkillState.Available;
+        return;
     }
-
-    _state.Value = SkillState.Unavailable;
+        _state.Value = SkillState.Unavailable;
 } 
 ```
 
@@ -99,22 +97,22 @@ private void CurrentSkillSelected()
     if (CanSell())
     {
         MessageBroker.Default
-            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-                isCanSell: true));
+            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: false,
+                CanSell: true));
         return;
     }
 
     if (CanBuy())
     {
         MessageBroker.Default
-            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: true,
-                isCanSell: false));
+            .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: true,
+                CanSell: false));
         return;
     }
 
     MessageBroker.Default
-        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-            isCanSell: false));
+        .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, CanBuy: false,
+            CanSell: false));
 }
 ```
 
