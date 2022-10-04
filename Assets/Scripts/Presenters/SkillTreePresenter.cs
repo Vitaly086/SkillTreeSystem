@@ -59,7 +59,8 @@ namespace Presenters
             {
                 var skillModel = _skillTreeModel.SkillModels[i];
 
-                var currentPresenter = Instantiate(_skillPrefab, skillModel.Position, Quaternion.identity,
+                var position = new Vector3(skillModel.Position.x, skillModel.Position.y, 1f);
+                var currentPresenter = Instantiate(_skillPrefab, position, Quaternion.identity,
                     transform);
                 currentPresenter.name = "Skill " + i;
                 currentPresenter.Initialize(skillModel, moneyService, pathfinding);

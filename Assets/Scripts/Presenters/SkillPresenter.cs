@@ -13,12 +13,11 @@ namespace Presenters
 
     {
         public int Cost => _model.Cost;
-        public IReadOnlyReactiveProperty<SkillState> State => _state;
+        public IReadOnlyReactiveProperty<SkillState> State => _model.State;
 
         [SerializeField] private SkillView _view;
 
         private readonly List<SkillPresenter> _neighbours = new List<SkillPresenter>();
-        private readonly ReactiveProperty<SkillState> _state = new ReactiveProperty<SkillState>();
         private List<SkillPresenter> _baseSkills;
         private IPathfindingService _pathfinding;
         private SkillModel _model;
@@ -59,7 +58,7 @@ namespace Presenters
         {
             if (!_model.IsBaseSkill && IsAvailable())
             {
-                _state.Value = SkillState.Bought;
+                _model.ChangeState(SkillState.Bought);
                 _moneyService.SubtractMoney(_model.Cost);
             }
 
@@ -70,7 +69,7 @@ namespace Presenters
         {
             if (!_model.IsBaseSkill && WasBought())
             {
-                _state.Value = SkillState.Available;
+                _model.ChangeState(SkillState.Available);
                 _moneyService.AddMoney(_model.Cost);
             }
 
@@ -81,12 +80,12 @@ namespace Presenters
         {
             if (model.IsBaseSkill)
             {
-                _state.Value = SkillState.Bought;
+                _model.ChangeState(SkillState.Bought);
                 _view.Text.text = $"{name} - base skill";
             }
             else
             {
-                _state.Value = SkillState.Unavailable;
+                _model.ChangeState(SkillState.Unavailable);
                 _view.Text.text = $"{name} cost {model.Cost} money";
             }
         }
@@ -112,7 +111,7 @@ namespace Presenters
 
         private void SubscribeOnStateUpdate()
         {
-            _state.Subscribe(state =>
+            _model.State.Subscribe(state =>
             {
                 _view.UpdateButton(state);
                 _neighbours.ForEach(neighbour => neighbour.UpdateState());
@@ -128,11 +127,11 @@ namespace Presenters
 
             if (EnoughMoney() && IsAnyNeighbourBought())
             {
-                _state.Value = SkillState.Available;
+                _model.ChangeState(SkillState.Available);
                 return;
             }
 
-            _state.Value = SkillState.Unavailable;
+            _model.ChangeState(SkillState.Unavailable);
         }
 
         private bool CanBuy()
@@ -153,7 +152,7 @@ namespace Presenters
 
         private bool IsAvailable()
         {
-            return _state.Value == SkillState.Available;
+            return _model.State.Value == SkillState.Available;
         }
 
         private bool EnoughMoney()
@@ -163,7 +162,7 @@ namespace Presenters
 
         private bool WasBought()
         {
-            return _state.Value == SkillState.Bought;
+            return _model.State.Value == SkillState.Bought;
         }
 
         private bool IsAnyNeighbourBought()
