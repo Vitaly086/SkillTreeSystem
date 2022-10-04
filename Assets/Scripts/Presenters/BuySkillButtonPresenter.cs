@@ -9,24 +9,24 @@ namespace Presenters
     {
         [SerializeField] private Button _button;
 
-        private SkillPresenter _selectedPresenter;
+        private SkillPresenter _selectedSkill;
 
         private void Start()
         {
             _button.interactable = false;
 
-            MessageBroker.Default.Receive<SelectCurrentPresenterEvent>()
+            MessageBroker.Default.Receive<CurrentSkillSelectedEvent>()
                 .Subscribe(eventData =>
                 {
-                    _selectedPresenter = eventData.CurrentPresenter;
-                    _button.interactable = eventData.IsCanBuy;
+                    _selectedSkill = eventData.CurrentPresenter;
+                    _button.interactable = eventData.CanBuy;
                     
                 })
                 .AddTo(this);
 
 
             _button.OnClickAsObservable()
-                .Subscribe(_ => { _selectedPresenter?.Buy(); })
+                .Subscribe(_ => { _selectedSkill?.Buy(); })
                 .AddTo(this);
         }
     }

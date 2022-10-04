@@ -9,7 +9,7 @@ namespace Views
     {
         public void OnPointerClick(PointerEventData eventData)
         {
-            MessageBroker.Default.Publish(new SelectCurrentPresenterEvent(null));
+            MessageBroker.Default.Publish(new CurrentSkillSelectedEvent(null));
         }
     }
 }

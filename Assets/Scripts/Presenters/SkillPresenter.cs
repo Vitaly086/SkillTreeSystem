@@ -19,7 +19,7 @@ namespace Presenters
 
         private readonly List<SkillPresenter> _neighbours = new List<SkillPresenter>();
         private readonly ReactiveProperty<SkillState> _state = new ReactiveProperty<SkillState>();
-        private List<SkillPresenter> _basePresenters;
+        private List<SkillPresenter> _baseSkills;
         private IPathfindingService _pathfinding;
         private SkillModel _model;
         private IMoneyService _moneyService;
@@ -30,16 +30,7 @@ namespace Presenters
             _moneyService = moneyService;
             _pathfinding = pathfinding;
 
-            if (model.IsBaseSkill)
-            {
-                _state.Value = SkillState.Bought;
-                _view.Text.text = $"{name} - base skill";
-            }
-            else
-            {
-                _state.Value = SkillState.Unavailable;
-                _view.Text.text = $"{name} cost {model.Cost} money";
-            }
+            SetDefaultData(model);
         }
 
         private void Start()
@@ -56,7 +47,7 @@ namespace Presenters
 
         public void SetBasePresenters(List<SkillPresenter> basePresenters)
         {
-            _basePresenters = basePresenters;
+            _baseSkills = basePresenters;
         }
 
         public IReadOnlyList<SkillPresenter> GetNeighbours()
@@ -86,6 +77,20 @@ namespace Presenters
             RefreshSelectedSkill();
         }
 
+        private void SetDefaultData(SkillModel model)
+        {
+            if (model.IsBaseSkill)
+            {
+                _state.Value = SkillState.Bought;
+                _view.Text.text = $"{name} - base skill";
+            }
+            else
+            {
+                _state.Value = SkillState.Unavailable;
+                _view.Text.text = $"{name} cost {model.Cost} money";
+            }
+        }
+
         private void SubscribeOnClick()
         {
             _view.Button.OnClickAsObservable()
@@ -95,25 +100,9 @@ namespace Presenters
 
         private void CurrentSkillSelected()
         {
-            if (CanSell())
-            {
-                MessageBroker.Default
-                    .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-                        isCanSell: true));
-                return;
-            }
-
-            if (CanBuy())
-            {
-                MessageBroker.Default
-                    .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: true,
-                        isCanSell: false));
-                return;
-            }
-
             MessageBroker.Default
-                .Publish(new SelectCurrentPresenterEvent(currentPresenter: this, isCanBuy: false,
-                    isCanSell: false));
+                .Publish(new CurrentSkillSelectedEvent(this, CanBuy(),
+                    CanSell()));
         }
 
         private void SubscribeOnMoneyUpdate()
@@ -159,7 +148,7 @@ namespace Presenters
         private bool IsAllNeighboursConnectBaseSkills()
         {
             return _pathfinding
-                .IsAllNeighboursConnectBaseSkills(this, _basePresenters);
+                .IsAllNeighboursConnectBaseSkills(this, _baseSkills);
         }
 
         private bool IsAvailable()
@@ -184,7 +173,7 @@ namespace Presenters
 
         private void RefreshSelectedSkill()
         {
-            MessageBroker.Default.Publish(new SelectCurrentPresenterEvent(null));
+            MessageBroker.Default.Publish(new CurrentSkillSelectedEvent(null));
         }
     }
 }

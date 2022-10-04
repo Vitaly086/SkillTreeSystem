@@ -22,7 +22,7 @@ namespace Presenters
             _button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    MessageBroker.Default.Publish(new SelectCurrentPresenterEvent(null));
+                    MessageBroker.Default.Publish(new CurrentSkillSelectedEvent(null));
                     moneyService.AddMoney(_amountMoney);
                 })
                 .AddTo(this);

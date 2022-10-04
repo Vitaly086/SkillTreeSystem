@@ -14,7 +14,7 @@ namespace Presenters
         {
             _skillPrice.text = "Skill not selected";
 
-            MessageBroker.Default.Receive<SelectCurrentPresenterEvent>()
+            MessageBroker.Default.Receive<CurrentSkillSelectedEvent>()
                 .Select(eventData => eventData.CurrentPresenter)
                 .Subscribe(currentPresenter =>
                 {
