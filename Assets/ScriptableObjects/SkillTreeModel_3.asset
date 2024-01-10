@@ -14,23 +14,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <SkillOffsetZ>k__BackingField: 1
   _skillModels:
-  - _position: {x: 620, y: 110}
+  - <SkillIcon>k__BackingField: {fileID: 21300000, guid: 754513e7ccdd28a469ede86fc54eb2c3, type: 3}
+    <Name>k__BackingField: skill_1
+    _position: {x: 620, y: 110}
     _isBaseSkill: 1
     _cost: 0
     _neighbourIndex: 010000000200000003000000
-  - _position: {x: 390, y: -55}
+  - <SkillIcon>k__BackingField: {fileID: 21300000, guid: 5834c9fbe449d4346b017dcbb7954c94, type: 3}
+    <Name>k__BackingField: skill_2
+    _position: {x: 390, y: -55}
     _isBaseSkill: 0
     _cost: 0
     _neighbourIndex: 000000000200000004000000
-  - _position: {x: 620, y: -55}
+  - <SkillIcon>k__BackingField: {fileID: 21300000, guid: 3434169aea05eeb4185f2fa72c80bf31, type: 3}
+    <Name>k__BackingField: skill_3
+    _position: {x: 620, y: -55}
     _isBaseSkill: 0
     _cost: 0
     _neighbourIndex: 00000000010000000300000004000000
-  - _position: {x: 850, y: -55}
+  - <SkillIcon>k__BackingField: {fileID: 21300000, guid: b7d15c2c6f7d8254daeacdfe6570f35c, type: 3}
+    <Name>k__BackingField: skill_4
+    _position: {x: 850, y: -55}
     _isBaseSkill: 0
     _cost: 0
     _neighbourIndex: 000000000200000004000000
-  - _position: {x: 620, y: -245}
+  - <SkillIcon>k__BackingField: {fileID: 21300000, guid: 40c3b95e1df8141418f11fc33ebc63ff, type: 3}
+    <Name>k__BackingField: skill_5
+    _position: {x: 620, y: -245}
     _isBaseSkill: 0
     _cost: 0
     _neighbourIndex: 010000000200000003000000
