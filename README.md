@@ -49,9 +49,17 @@ https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/1bb0f0a6-92f6-4d79-
 <img width="428" alt="Снимок экрана 2024-01-11 в 00 07 51" src="https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/9db7ca72-a49e-455a-a17d-cb4e48b30f5d">
 
 
-За старт игры отвечает класс [Skill Tree Initializer](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/GameCore/SkillTreeInitializer.cs), он содержит ссылки на все Skill Tree Presenter (на одном экране может быть несколько деревьев со скиллами, как в WOW):
+За старт игры отвечает класс [Skill Tree Initializer](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/GameCore/SkillTreeInitializer.cs), он содержит ссылки на все Skill Tree Presenter:
 
 <img width="420" alt="Снимок экрана 2024-01-11 в 00 06 30" src="https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/d3894380-e0ce-4eed-a843-a23614110f41">
+
+
+
+На одном экране может быть несколько деревьев со скиллами, как в WOW:
+
+
+![изображение](https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/0b419982-2a30-421e-a2d0-c8c702b40518)
+
 
 
 Каждое дерево имеет свой [Skill Tree Presenter](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Presenters/SkillTreePresenter.cs), класс который отвечает за логику работы одного дерева скиллов:
