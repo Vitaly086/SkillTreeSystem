@@ -37,32 +37,27 @@
 
 13) Новые умения открываются при условии покупки предыдущего и достаточного количества денег. :heavy_check_mark: 
 
-# Игра
+# Видео
 
-
-https://user-images.githubusercontent.com/93872632/187025485-f8fa7a2c-68d6-4a9c-9016-9f6697f0a4a9.mp4
-
-
-# Игровая сцена
-
-
-![изображение](https://user-images.githubusercontent.com/93872632/187030023-3f25ef27-fafd-4adf-a2c9-d27027f5f479.png)
+https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/1bb0f0a6-92f6-4d79-93b1-f9971c188178
 
 
 # Настройка и запуск игры
 
-Дерево скиллов это ScriptableObject в котором задается модель дерева и [Skill Model](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Models/SkillModel.cs) каждого скилла,
-в дальнейшем возможно переделать модель по JSON и получать информацию с сервера:
+Дерево скиллов это ScriptableObject в котором задается модель дерева и [Skill Model](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Models/SkillModel.cs) каждого скилла, в дальнейшем возможно переделать модель по JSON и получать информацию с сервера:
 
-![изображение](https://user-images.githubusercontent.com/93872632/186952385-815b0afe-012c-4810-9158-5f829034904d.png)
+<img width="428" alt="Снимок экрана 2024-01-11 в 00 07 51" src="https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/9db7ca72-a49e-455a-a17d-cb4e48b30f5d">
+
 
 За старт игры отвечает класс [Skill Tree Initializer](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/GameCore/SkillTreeInitializer.cs), он содержит ссылки на все Skill Tree Presenter (на одном экране может быть несколько деревьев со скиллами, как в WOW):
 
-![изображение](https://user-images.githubusercontent.com/93872632/186649138-b6090277-c457-48c4-8959-f031db26dbca.png)
+<img width="420" alt="Снимок экрана 2024-01-11 в 00 06 30" src="https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/d3894380-e0ce-4eed-a843-a23614110f41">
+
 
 Каждое дерево имеет свой [Skill Tree Presenter](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Presenters/SkillTreePresenter.cs), класс который отвечает за логику работы одного дерева скиллов:
 
-![изображение](https://user-images.githubusercontent.com/93872632/186656785-d801d2c3-7414-4567-8220-1d2b659d912c.png)
+<img width="432" alt="Снимок экрана 2024-01-11 в 00 07 24" src="https://github.com/Vitaly086/SkillTreeSystem/assets/93872632/b8c90665-a723-4739-8caf-701a45e26d74">
+
 
 # Как происходит логика обновления состояния скилла?
 
@@ -72,18 +67,17 @@ https://user-images.githubusercontent.com/93872632/187025485-f8fa7a2c-68d6-4a9c-
 ```C#
 private void UpdateState()
 {
-    if (WasBought())
-    {
-         return;
-    }
-
+    if (IsBought()) return;
+    
     if (EnoughMoney() && IsAnyNeighbourBought())
     {
-        _state.Value = SkillState.Available;
-        return;
+        _model.ChangeState(SkillState.Available);
     }
-        _state.Value = SkillState.Unavailable;
-} 
+    else
+    {
+        _model.ChangeState(SkillState.Unavailable);
+    }
+}
 ```
 
 # Как происходит обновление UI при выделении скилла?
@@ -104,32 +98,30 @@ private void CurrentSkillSelected()
 Для этого используется алгоритм поиска пути в глубину, [Pathfinding Service](https://github.com/Vitaly086/Skill_Tree_Testgame/blob/master/Assets/Scripts/Services/PathfindingService.cs) проверяет имеет ли каждый купленный сосед путь до базового скилла.
 
 ```C#
-private bool HasPathToNodes(SkillPresenter currentPresenter, List<SkillPresenter> destinations)
+private bool HasPathToNodes(SkillPresenter currentSkill, List<SkillPresenter> destinations)
 {
-    if (!destinations.Contains(currentPresenter))
-    {
-        _usedNodes.Add(currentPresenter);
-    }
-
-    if (destinations.Contains(currentPresenter))
+    if (destinations.Contains(currentSkill))
     {
         return true;
     }
 
-    foreach (var neighbour in currentPresenter.GetNeighbours())
+    _visitedNodes.Add(currentSkill);
+
+    foreach (var neighbour in currentSkill.GetNeighbours())
     {
-        if (_usedNodes.Contains(neighbour) || neighbour.State.Value != SkillState.Bought)
+        if (_visitedNodes.Contains(neighbour) || neighbour.State.Value != SkillState.Bought)
         {
             continue;
         }
 
         if (HasPathToNodes(neighbour, destinations))
         {
-            _usedNodes.Clear();
             return true;
         }
     }
-{
+
+    return false;
+}
 ```
 
 
