@@ -7,7 +7,8 @@ namespace Presenters
 {
     public class SellSkillButtonPresenter : MonoBehaviour
     {
-        [SerializeField] private Button _button;
+        [SerializeField]
+        private Button _button;
 
         private SkillPresenter _selectedSkill;
 
@@ -16,17 +17,20 @@ namespace Presenters
             _button.interactable = false;
 
             MessageBroker.Default.Receive<CurrentSkillSelectedEvent>()
-                .Subscribe(eventData =>
-                {
-                    _selectedSkill = eventData.CurrentPresenter;
-                    _button.interactable = eventData.CanSell;
-                })
+                .Subscribe(HandleSkillSelected)
                 .AddTo(this);
 
 
             _button.OnClickAsObservable()
-                .Subscribe(_ => _selectedSkill?.Sell())
+                .Where(_ => _selectedSkill != null)
+                .Subscribe(_ => _selectedSkill.SellSkill())
                 .AddTo(this);
+        }
+
+        private void HandleSkillSelected(CurrentSkillSelectedEvent eventData)
+        {
+            _selectedSkill = eventData.CurrentPresenter;
+            _button.interactable = eventData.CanSell;
         }
     }
 }

@@ -8,6 +8,12 @@ namespace Models
     [Serializable]
     public class SkillModel
     {
+        [field: SerializeField]
+        public Sprite SkillIcon { get; private set; }
+
+        [field: SerializeField]
+        public string Name { get; private set; }
+
         public IReadOnlyReactiveProperty<SkillState> State => _state;
 
         public List<int> NeighbourIndex => _neighbourIndex;
@@ -18,15 +24,20 @@ namespace Models
 
         public Vector2 Position => _position;
 
-        [SerializeField] private Vector2 _position;
 
-        [SerializeField] private bool _isBaseSkill;
+        [SerializeField]
+        private Vector2 _position;
 
-        [SerializeField] private int _cost;
+        [SerializeField]
+        private bool _isBaseSkill;
 
-        [SerializeField] private List<int> _neighbourIndex;
+        [SerializeField]
+        private int _cost;
 
-        private readonly ReactiveProperty<SkillState> _state = new ReactiveProperty<SkillState>();
+        [SerializeField]
+        private List<int> _neighbourIndex;
+
+        private readonly ReactiveProperty<SkillState> _state = new();
 
         public void ChangeState(SkillState state)
         {

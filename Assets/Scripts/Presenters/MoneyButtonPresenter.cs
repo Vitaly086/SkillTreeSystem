@@ -17,7 +17,7 @@ namespace Presenters
         {
             var moneyService = ServiceLocator.Instance.GetSingle<IMoneyService>();
 
-            _text.text = _amountMoney >= 0 ? $"Add {_amountMoney} money" : $"Subtract {_amountMoney} money";
+            _text.text = _amountMoney >= 0 ? $"Add {_amountMoney} $" : $"Subtract {_amountMoney} $";
 
             _button.OnClickAsObservable()
                 .Subscribe(_ =>

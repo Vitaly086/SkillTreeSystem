@@ -8,11 +8,7 @@ namespace Events
         public bool CanBuy { get; }
         public bool CanSell { get; }
 
-        public CurrentSkillSelectedEvent(SkillPresenter currentPresenter)
-        {
-            CurrentPresenter = currentPresenter;
-        }
-        public CurrentSkillSelectedEvent(SkillPresenter currentPresenter, bool canBuy, bool canSell)
+        public CurrentSkillSelectedEvent(SkillPresenter currentPresenter, bool canBuy = false, bool canSell = false)
         {
             CurrentPresenter = currentPresenter;
             CanBuy = canBuy;

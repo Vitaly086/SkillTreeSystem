@@ -6,7 +6,7 @@ namespace Services
     {
         public IReadOnlyReactiveProperty<int> Money => _money;
         
-        private readonly ReactiveProperty<int> _money = new ReactiveProperty<int>();
+        private readonly ReactiveProperty<int> _money = new();
         
         public void AddMoney(int amountMoney)
         {

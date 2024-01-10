@@ -15,7 +15,7 @@ namespace Presenters
             var moneyService = ServiceLocator.Instance.GetSingle<IMoneyService>();
         
             moneyService.Money
-                .Subscribe(_ => _userMoneyValue.text = $"Amount of money: {moneyService.Money.Value.ToString()}")
+                .Subscribe(_ => _userMoneyValue.text = $"{moneyService.Money.Value} $")
                 .AddTo(this);
         }
     }

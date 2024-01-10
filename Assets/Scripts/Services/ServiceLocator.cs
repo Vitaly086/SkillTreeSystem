@@ -5,7 +5,7 @@ namespace Services
 {
     public sealed class ServiceLocator : Singleton<ServiceLocator>
     {
-        private readonly Dictionary<Type, IService> _services = new Dictionary<Type, IService>();
+        private readonly Dictionary<Type, IService> _services = new();
 
         public void RegisterSingle<TService>(TService service) where TService : IService
         {

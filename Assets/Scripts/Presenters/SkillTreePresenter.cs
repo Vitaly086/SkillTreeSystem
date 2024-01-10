@@ -5,81 +5,111 @@ using Models;
 using Services;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Views;
 
 namespace Presenters
 {
     public class SkillTreePresenter : MonoBehaviour
     {
-        [SerializeField] private LineRenderer _egdePrefab;
-        [SerializeField] private SkillTreeModel _skillTreeModel;
-        [SerializeField] private SkillPresenter _skillPrefab;
+        [FormerlySerializedAs("_egdePrefab")]
+        [SerializeField]
+        private LineRenderer _edgePrefab;
+        [SerializeField]
+        private SkillTreeModel _skillTreeModel;
+        [SerializeField]
+        private SkillView _skillPrefab;
 
-        private readonly List<SkillPresenter> _skillPresenters = new List<SkillPresenter>();
-        private readonly List<SkillPresenter> _basePresenters = new List<SkillPresenter>();
+        private readonly List<SkillPresenter> _skillPresenters = new();
 
         public void Initialize(IMoneyService moneyService, IPathfindingService pathfinding)
         {
-            CreateSkillTree(moneyService, pathfinding);
+            BuildSkillTree(moneyService, pathfinding);
 
             MessageBroker.Default.Receive<SellAllSkillsEvent>().Subscribe(_ => SellAllSkills());
         }
 
         private void SellAllSkills()
         {
-            for (var i = _skillPresenters.Count - 1; i >= 0; i--)
+            foreach (var presenter in _skillPresenters)
             {
-                _skillPresenters[i].Sell();
+                presenter.SellSkill();
             }
         }
 
-        private void CreateSkillTree(IMoneyService moneyService, IPathfindingService pathfinding)
+        private void BuildSkillTree(IMoneyService moneyService, IPathfindingService pathfinding)
         {
-            CreateSkillPresenter(moneyService, pathfinding);
-
-            for (var index = 0; index < _skillPresenters.Count; index++)
-            {
-                var currentPresenter = _skillPresenters[index];
-                var skillModel = _skillTreeModel.SkillModels[index];
-
-                currentPresenter.SetBasePresenters(_basePresenters);
-
-                foreach (var childPresenter in skillModel.NeighbourIndex
-                             .Select(neighbourIndex =>
-                                 _skillPresenters[neighbourIndex]))
-                {
-                    currentPresenter.AddNeighbours(childPresenter);
-                    CreateEdges(currentPresenter, childPresenter);
-                }
-            }
+            CreatePresenters(moneyService, pathfinding);
+            ConnectPresenters();
         }
 
-        private void CreateSkillPresenter(IMoneyService moneyService, IPathfindingService pathfinding)
+        private void CreatePresenters(IMoneyService moneyService, IPathfindingService pathfinding)
         {
+            var baseSkills = new List<SkillPresenter>();
+
             for (int i = 0; i < _skillTreeModel.SkillModels.Count; i++)
             {
                 var skillModel = _skillTreeModel.SkillModels[i];
+                var skillPresenter = InstantiateSkillPresenter(skillModel, i, moneyService, pathfinding);
 
-                var position = new Vector3(skillModel.Position.x, skillModel.Position.y, _skillTreeModel.SkillOffsetZ);
-                var currentPresenter = Instantiate(_skillPrefab, position, Quaternion.identity,
-                    transform);
-                currentPresenter.name = "Skill " + i;
-                currentPresenter.Initialize(skillModel, moneyService, pathfinding);
-
-                _skillPresenters.Add(currentPresenter);
-
+                _skillPresenters.Add(skillPresenter);
                 if (skillModel.IsBaseSkill)
                 {
-                    _basePresenters.Add(currentPresenter);
+                    baseSkills.Add(skillPresenter);
+                }
+            }
+            
+            foreach (var skillPresenter in _skillPresenters)
+            {
+                skillPresenter.SetBaseSkills(baseSkills);
+            }
+        }
+        
+        private SkillPresenter InstantiateSkillPresenter(SkillModel model, int index, IMoneyService moneyService,
+            IPathfindingService pathfinding)
+        {
+            var position = new Vector2(model.Position.x, model.Position.y);
+            var skillView = Instantiate(_skillPrefab, position, Quaternion.identity, transform);
+            skillView.name = $"Skill {index}";
+            var presenter = new SkillPresenter(model, moneyService, pathfinding, skillView);
+            return presenter;
+        }
+
+        private void ConnectPresenters()
+        {
+            for (int i = 0; i < _skillPresenters.Count; i++)
+            {
+                var currentPresenter = _skillPresenters[i];
+                var currentModel = _skillTreeModel.SkillModels[i];
+
+                var neighbourPresenters = currentModel.NeighbourIndex
+                    .Select(index => _skillPresenters[index])
+                    .ToList();
+
+                foreach (var neighbourPresenter in neighbourPresenters)
+                {
+                    currentPresenter.AddNeighbour(neighbourPresenter);
+                    CreateEdgeBetween(currentPresenter, neighbourPresenter);
                 }
             }
         }
 
-        private void CreateEdges(SkillPresenter currentSkill, SkillPresenter neighbourSkill)
+        private void CreateEdgeBetween(SkillPresenter from, SkillPresenter to)
         {
-            var edge = Instantiate(_egdePrefab, transform);
+            var edge = Instantiate(_edgePrefab, transform);
             edge.positionCount = 2;
-            edge.SetPosition(0, currentSkill.transform.position);
-            edge.SetPosition(1, neighbourSkill.transform.position);
+            edge.SetPositions(new[]
+            {
+                from.ViewPosition, to.ViewPosition
+            });
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var skillPresenter in _skillPresenters)
+            {
+                skillPresenter.Dispose();
+            }
         }
     }
 }

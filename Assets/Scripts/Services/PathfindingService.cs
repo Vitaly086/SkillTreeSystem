@@ -7,57 +7,50 @@ namespace Services
 {
     public class PathfindingService : IPathfindingService
     {
-        private readonly HashSet<SkillPresenter> _usedNodes = new HashSet<SkillPresenter>();
-        private IReadOnlyList<SkillPresenter> _neighbours;
+        private readonly HashSet<SkillPresenter> _visitedNodes = new();
 
         public bool IsAllNeighboursConnectBaseSkills(SkillPresenter soldSkill, List<SkillPresenter> destinations)
         {
-            _usedNodes.Clear();
-            _neighbours = soldSkill.GetNeighbours();
-            var allNeighboursHasPath = false;
+            _visitedNodes.Clear();
+            _visitedNodes.Add(soldSkill); 
 
-            foreach (var currentSkill in _neighbours)
+            foreach (var neighbour in soldSkill.GetNeighbours())
             {
-                if (currentSkill.State.Value == SkillState.Bought)
+                if (neighbour.State.Value != SkillState.Bought || _visitedNodes.Contains(neighbour))
                 {
-                    _usedNodes.Add(soldSkill);
-                    if (HasPathToNodes(currentSkill, destinations))
-                    {
-                        allNeighboursHasPath = true;
-                    }
-                    else
-                    {
-                        allNeighboursHasPath = false;
-                        break;
-                    }
+                    continue;
+                }
+                
+                _visitedNodes.Clear(); 
+                _visitedNodes.Add(soldSkill); 
+
+                if (!HasPathToNodes(neighbour, destinations))
+                {
+                    return false;
                 }
             }
 
-            return allNeighboursHasPath;
+            return true;
         }
 
         private bool HasPathToNodes(SkillPresenter currentSkill, List<SkillPresenter> destinations)
         {
-            if (!destinations.Contains(currentSkill))
-            {
-                _usedNodes.Add(currentSkill);
-            }
-
             if (destinations.Contains(currentSkill))
             {
                 return true;
             }
 
+            _visitedNodes.Add(currentSkill);
+
             foreach (var neighbour in currentSkill.GetNeighbours())
             {
-                if (_usedNodes.Contains(neighbour) || neighbour.State.Value != SkillState.Bought)
+                if (_visitedNodes.Contains(neighbour) || neighbour.State.Value != SkillState.Bought)
                 {
                     continue;
                 }
 
                 if (HasPathToNodes(neighbour, destinations))
                 {
-                    _usedNodes.Clear();
                     return true;
                 }
             }

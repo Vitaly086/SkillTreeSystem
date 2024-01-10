@@ -8,57 +8,54 @@ namespace Views
     public class SkillView : MonoBehaviour
     {
         public Button Button => _button;
-        public TextMeshProUGUI Text => _text;
 
-        [SerializeField] private Button _button;
-        [SerializeField] private TextMeshProUGUI _text;
-        [SerializeField] private Image _image;
-        [SerializeField] private float _alpha;
+        [SerializeField]
+        private Button _button;
+        [SerializeField]
+        private TextMeshProUGUI _text;
+        [SerializeField]
+        private Image _image;
+        [SerializeField]
+        private Image _frame;
+        [SerializeField]
+        private Color _boughtFrameColor;
+        [SerializeField]
+        private Color _availableFrameColor;
+        [SerializeField]
+        private Color _unavailableFrameColor;
 
-            [Header("Skill color setting")] [SerializeField]
-        private Color _learnedColor = Color.red;
 
-        [SerializeField] private Color _availableColor = Color.blue;
-
-        private void Start()
+        public void Initialize(Sprite sprite)
         {
-            _image.alphaHitTestMinimumThreshold =_alpha;
+            _image.sprite = sprite;
             _button.interactable = false;
         }
 
         public void UpdateButton(SkillState state)
         {
-            UpdateColor(state);
             UpdateInteractable(state);
+            UpdateFrameColor(state);
         }
 
-        private void UpdateColor(SkillState state)
+        public void SetPrice(string price)
         {
-            var colors = _button.colors;
+            _text.text = price;
+        }
 
-            switch (state)
+        private void UpdateFrameColor(SkillState state)
+        {
+            _frame.color = state switch
             {
-                case SkillState.Bought:
-                    colors.normalColor = _learnedColor;
-                    break;
-
-                case SkillState.Available:
-                    colors.normalColor = _availableColor;
-                    break;
-            }
-
-            _button.colors = colors;
+                SkillState.Bought => _boughtFrameColor,
+                SkillState.Available => _availableFrameColor,
+                SkillState.Unavailable => _unavailableFrameColor,
+                _ => _frame.color
+            };
         }
 
         private void UpdateInteractable(SkillState state)
         {
-            _button.interactable = state switch
-            {
-                SkillState.Bought => true,
-                SkillState.Available => true,
-                SkillState.Unavailable => false,
-                _ => _button.interactable
-            };
+            _button.interactable = state != SkillState.Unavailable;
         }
     }
 }

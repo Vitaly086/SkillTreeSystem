@@ -20,13 +20,12 @@ namespace Presenters
                 {
                     _selectedSkill = eventData.CurrentPresenter;
                     _button.interactable = eventData.CanBuy;
-                    
                 })
                 .AddTo(this);
 
 
             _button.OnClickAsObservable()
-                .Subscribe(_ => { _selectedSkill?.Buy(); })
+                .Subscribe(_ => { _selectedSkill?.BuySkill(); })
                 .AddTo(this);
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Events;
 using Models;
@@ -9,52 +10,46 @@ using Views;
 
 namespace Presenters
 {
-    public class SkillPresenter : MonoBehaviour
-
+    public class SkillPresenter : IDisposable
     {
         public int Cost => _model.Cost;
         public IReadOnlyReactiveProperty<SkillState> State => _model.State;
+        public Vector3 ViewPosition => _view.transform.position;
+        public string SkillName => _model.Name;
 
-        [SerializeField] private SkillView _view;
-
-        private readonly List<SkillPresenter> _neighbours = new List<SkillPresenter>();
+        private readonly SkillView _view;
+        private readonly List<SkillPresenter> _neighbours = new();
         private List<SkillPresenter> _baseSkills;
-        private IPathfindingService _pathfinding;
-        private SkillModel _model;
-        private IMoneyService _moneyService;
+        private readonly IPathfindingService _pathfinding;
+        private readonly SkillModel _model;
+        private readonly IMoneyService _moneyService;
+        private readonly CompositeDisposable _disposables = new();
 
-        public void Initialize(SkillModel model, IMoneyService moneyService, IPathfindingService pathfinding)
+
+        public SkillPresenter(SkillModel model, IMoneyService moneyService, IPathfindingService pathfinding,
+            SkillView view)
         {
             _model = model;
             _moneyService = moneyService;
             _pathfinding = pathfinding;
+            _view = view;
 
-            SetDefaultData(model);
+            Initialize();
         }
 
-        private void Start()
+        private void Initialize()
         {
-            SubscribeOnStateUpdate();
-            SubscribeOnMoneyUpdate();
-            SubscribeOnClick();
+            _view.Initialize(_model.SkillIcon);
+            SetDefaultData();
+            SubscribeEvents();
         }
 
-        public void AddNeighbours(SkillPresenter neighbour)
-        {
-            _neighbours.Add(neighbour);
-        }
+        public void AddNeighbour(SkillPresenter neighbour) => _neighbours.Add(neighbour);
+        public void SetBaseSkills(List<SkillPresenter> basePresenters) => _baseSkills = basePresenters;
+        public IReadOnlyList<SkillPresenter> GetNeighbours() => _neighbours;
 
-        public void SetBasePresenters(List<SkillPresenter> basePresenters)
-        {
-            _baseSkills = basePresenters;
-        }
 
-        public IReadOnlyList<SkillPresenter> GetNeighbours()
-        {
-            return _neighbours;
-        }
-
-        public void Buy()
+        public void BuySkill()
         {
             if (!_model.IsBaseSkill && IsAvailable())
             {
@@ -65,9 +60,9 @@ namespace Presenters
             RefreshSelectedSkill();
         }
 
-        public void Sell()
+        public void SellSkill()
         {
-            if (!_model.IsBaseSkill && WasBought())
+            if (!_model.IsBaseSkill && IsBought())
             {
                 _model.ChangeState(SkillState.Available);
                 _moneyService.AddMoney(_model.Cost);
@@ -76,25 +71,33 @@ namespace Presenters
             RefreshSelectedSkill();
         }
 
-        private void SetDefaultData(SkillModel model)
+        private void SubscribeEvents()
         {
-            if (model.IsBaseSkill)
+            _view.Button.OnClickAsObservable()
+                .Subscribe(_ => CurrentSkillSelected())
+                .AddTo(_disposables);
+
+            _moneyService.Money.Subscribe(_ => UpdateState()).AddTo(_disposables);
+
+            _model.State.Subscribe(state =>
+            {
+                _view.UpdateButton(state);
+                _neighbours.ForEach(neighbour => neighbour.UpdateState());
+            }).AddTo(_disposables);
+        }
+
+        private void SetDefaultData()
+        {
+            if (_model.IsBaseSkill)
             {
                 _model.ChangeState(SkillState.Bought);
-                _view.Text.text = $"{name} - base skill";
+                _view.SetPrice("");
             }
             else
             {
                 _model.ChangeState(SkillState.Unavailable);
-                _view.Text.text = $"{name} cost {model.Cost} money";
+                _view.SetPrice($"{_model.Cost}$");
             }
-        }
-
-        private void SubscribeOnClick()
-        {
-            _view.Button.OnClickAsObservable()
-                .Subscribe(_ => CurrentSkillSelected())
-                .AddTo(this);
         }
 
         private void CurrentSkillSelected()
@@ -103,75 +106,25 @@ namespace Presenters
                 .Publish(new CurrentSkillSelectedEvent(this, CanBuy(), CanSell()));
         }
 
-        private void SubscribeOnMoneyUpdate()
-        {
-            _moneyService.Money.Subscribe(_ => UpdateState()).AddTo(this);
-        }
-
-        private void SubscribeOnStateUpdate()
-        {
-            _model.State.Subscribe(state =>
-            {
-                _view.UpdateButton(state);
-                _neighbours.ForEach(neighbour => neighbour.UpdateState());
-            }).AddTo(this);
-        }
-
         private void UpdateState()
         {
-            if (WasBought())
-            {
-                return;
-            }
-
-            if (EnoughMoney() && IsAnyNeighbourBought())
-            {
-                _model.ChangeState(SkillState.Available);
-                return;
-            }
-
-            _model.ChangeState(SkillState.Unavailable);
+            if (IsBought()) return;
+            _model.ChangeState(EnoughMoney() && IsAnyNeighbourBought() ? SkillState.Available : SkillState.Unavailable);
         }
 
-        private bool CanBuy()
-        {
-            return !_model.IsBaseSkill && IsAvailable();
-        }
+        private bool CanBuy() => !_model.IsBaseSkill && IsAvailable();
 
-        private bool CanSell()
-        {
-            return !_model.IsBaseSkill && WasBought() && IsAllNeighboursConnectBaseSkills();
-        }
+        private bool CanSell() => !_model.IsBaseSkill && IsBought() &&
+                                  _pathfinding.IsAllNeighboursConnectBaseSkills(this, _baseSkills);
 
-        private bool IsAllNeighboursConnectBaseSkills()
-        {
-            return _pathfinding
-                .IsAllNeighboursConnectBaseSkills(this, _baseSkills);
-        }
+        private bool IsAvailable() => _model.State.Value == SkillState.Available;
 
-        private bool IsAvailable()
-        {
-            return _model.State.Value == SkillState.Available;
-        }
+        private bool IsBought() => _model.State.Value == SkillState.Bought;
+        private bool EnoughMoney() => _moneyService.Money.Value >= _model.Cost;
 
-        private bool EnoughMoney()
-        {
-            return _moneyService.Money.Value >= _model.Cost;
-        }
+        private bool IsAnyNeighbourBought() => _neighbours.Any(presenter => presenter.State.Value == SkillState.Bought);
 
-        private bool WasBought()
-        {
-            return _model.State.Value == SkillState.Bought;
-        }
-
-        private bool IsAnyNeighbourBought()
-        {
-            return _neighbours.Any(presenter => presenter.State.Value == SkillState.Bought);
-        }
-
-        private void RefreshSelectedSkill()
-        {
-            MessageBroker.Default.Publish(new CurrentSkillSelectedEvent(null));
-        }
+        private void RefreshSelectedSkill() => MessageBroker.Default.Publish(new CurrentSkillSelectedEvent(null));
+        public void Dispose() => _disposables?.Dispose();
     }
 }

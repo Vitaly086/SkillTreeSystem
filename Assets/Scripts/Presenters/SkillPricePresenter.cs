@@ -8,33 +8,35 @@ namespace Presenters
 {
     public class SkillPricePresenter : MonoBehaviour
     {
-        [SerializeField] private TextMeshProUGUI _skillPrice;
+        private const string SKILL_NOT_SELECTED_TEXT = "Skill not selected";
+        private const string SKILL_BOUGHT_TEXT_FORMAT = "{0} is bought";
+        private const string SKILL_COST_TEXT_FORMAT = "{0} costs: {1} money";
+
+        [SerializeField]
+        private TextMeshProUGUI _skillPrice;
 
         private void Start()
         {
-            _skillPrice.text = "Skill not selected";
+            _skillPrice.text = SKILL_NOT_SELECTED_TEXT;
 
             MessageBroker.Default.Receive<CurrentSkillSelectedEvent>()
+                .Where(eventData => eventData.CurrentPresenter != null)
                 .Select(eventData => eventData.CurrentPresenter)
-                .Subscribe(currentPresenter =>
-                {
-                    if (IsNull(currentPresenter)) return;
-
-                    _skillPrice.text = currentPresenter.State.Value == SkillState.Bought
-                        ? $"{currentPresenter.name} is bought"
-                        : $"{currentPresenter.name} costs: {currentPresenter.Cost.ToString()} money";
-                }).AddTo(this);
+                .Subscribe(UpdateSkillPriceText)
+                .AddTo(this);
         }
 
-        private bool IsNull(SkillPresenter presenter)
+        private void UpdateSkillPriceText(SkillPresenter currentPresenter)
         {
-            if (presenter == null)
+            if (currentPresenter == null)
             {
-                _skillPrice.text = "Skill not selected";
-                return true;
+                _skillPrice.text = SKILL_NOT_SELECTED_TEXT;
+                return;
             }
 
-            return false;
+            _skillPrice.text = currentPresenter.State.Value == SkillState.Bought
+                ? string.Format(SKILL_BOUGHT_TEXT_FORMAT, currentPresenter.SkillName)
+                : string.Format(SKILL_COST_TEXT_FORMAT, currentPresenter.SkillName, currentPresenter.Cost);
         }
     }
 }
